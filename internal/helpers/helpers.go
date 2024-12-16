@@ -74,15 +74,29 @@ func generateEmail(value *sqlparser.SQLVal) *sqlparser.SQLVal {
 	defer mu.Unlock()
 
 	var email string
+	var second_email_option string
+	var third_email_option string
+	var used_email string
 	for {
 		email = faker.Internet().SafeEmail()
+		second_email_option = faker.Internet().FreeEmail()
+		third_email_option = faker.Internet().Email()
 		if !usedEmails[email] {
 			usedEmails[email] = true
+			used_email = email
+			break
+		} else if !usedEmails[second_email_option] {
+			usedEmails[second_email_option] = true
+			used_email = second_email_option
+			break
+		} else if !usedEmails[third_email_option] {
+			usedEmails[third_email_option] = true
+			used_email = third_email_option
 			break
 		}
 	}
 
-	return sqlparser.NewStrVal([]byte(email))
+	return sqlparser.NewStrVal([]byte(used_email))
 }
 
 func generatePhoneNumber(value *sqlparser.SQLVal) *sqlparser.SQLVal {
