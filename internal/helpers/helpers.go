@@ -3,6 +3,7 @@ package helpers
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -55,6 +56,7 @@ func GetFakerFuncs() map[string]func(*sqlparser.SQLVal) *sqlparser.SQLVal {
 		"WPDateTime":           generateWPDateTime,
 		"WPFutureDateTime":     generateWPFutureDateTime,
 		"purge":                generateEmptyString,
+		"spanishDNI":           generateSpanishDniString,
 	}
 
 	return fakerHelpers
@@ -246,4 +248,12 @@ func generateWPFutureDateTime(value *sqlparser.SQLVal) *sqlparser.SQLVal {
 	futureTime := time.Now().Add(time.Duration(randomSeconds) * time.Second)
 
 	return sqlparser.NewStrVal([]byte(futureTime.Format("2006-01-02 15:04:05")))
+}
+
+func generateSpanishDniString(value *sqlparser.SQLVal) *sqlparser.SQLVal {
+	number := rand.Intn(99999999)
+	nif_seq := "TRWAGMYFPDXBNJZSQVHLCKE"
+	letter := string(nif_seq[(number % len(nif_seq))])
+	dni := fmt.Sprintf("%08d", number) + letter
+	return sqlparser.NewStrVal([]byte(dni))
 }
